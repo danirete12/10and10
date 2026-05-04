@@ -1,0 +1,263 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── BRAND ───────────────────────────────────────────────────────────────────
+
+model Brand {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  country     String?
+  foundedYear Int?
+  description String?
+  logoUrl     String?
+  websiteUrl  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  watches     Watch[]
+
+  @@index([slug])
+}
+
+// ─── MOVEMENT ────────────────────────────────────────────────────────────────
+
+enum MovementType {
+  AUTOMATIC
+  MANUAL
+  QUARTZ
+  SOLAR
+  SPRING_DRIVE
+}
+
+model Movement {
+  id              String       @id @default(uuid())
+  slug            String       @unique
+  caliber         String
+  manufacturer    String?
+  type            MovementType
+  jewels          Int?
+  frequencyHz     Float?
+  powerReserveH   Int?
+  cosc            Boolean      @default(false)
+  inHouse         Boolean      @default(false)
+  description     String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  watches         Watch[]
+
+  @@index([slug])
+  @@index([manufacturer])
+}
+
+// ─── WATCH ───────────────────────────────────────────────────────────────────
+
+enum CaseMaterial {
+  STAINLESS_STEEL
+  YELLOW_GOLD
+  WHITE_GOLD
+  ROSE_GOLD
+  TITANIUM
+  CERAMIC
+  PLATINUM
+  BRONZE
+  CARBON
+  OTHER
+}
+
+enum CrystalType {
+  SAPPHIRE
+  MINERAL
+  ACRYLIC
+  HESALITE
+}
+
+enum WaterResistanceUnit {
+  ATM
+  BAR
+  METERS
+}
+
+enum Gender {
+  MENS
+  WOMENS
+  UNISEX
+}
+
+model Watch {
+  id              String        @id @default(uuid())
+  slug            String        @unique
+  reference       String
+  commercialName  String?
+
+  brandId         String
+  brand           Brand         @relation(fields: [brandId], references: [id])
+
+  movementId      String?
+  movement        Movement?     @relation(fields: [movementId], references: [id])
+
+  // Introducción
+  yearIntroduced  Int?
+  discontinued    Boolean       @default(false)
+
+  // Caja
+  caseDiameterMm  Float?
+  caseThicknessMm Float?
+  lugToLugMm      Float?
+  caseMaterial    CaseMaterial?
+  crystal         CrystalType?
+
+  // Esfera
+  dialColor       String?
+  dialMaterial    String?
+
+  // Correa / brazalete
+  braceletMaterial String?
+  lugWidthMm      Int?
+
+  // Agua
+  waterResistance       Int?
+  waterResistanceUnit   WaterResistanceUnit?
+
+  // Clasificación
+  gender          Gender        @default(MENS)
+  complicationTags String[]
+
+  // Precio orientativo (EUR)
+  retailPriceEur  Int?
+
+  // Descripción y contenido
+  description     String?
+
+  // Métricas desnormalizadas (se actualizan en cada write de Review)
+  averageRating   Float?
+  reviewCount     Int           @default(0)
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  images          WatchImage[]
+  reviews         Review[]
+  collectionItems CollectionItem[]
+  wishlistItems   WishlistItem[]
+
+  @@unique([brandId, reference])
+  @@index([slug])
+  @@index([brandId])
+  @@index([movementId])
+  @@index([yearIntroduced])
+  @@index([caseMaterial])
+  @@index([dialColor])
+}
+
+// ─── WATCH IMAGE ─────────────────────────────────────────────────────────────
+
+model WatchImage {
+  id        String   @id @default(uuid())
+  watchId   String
+  watch     Watch    @relation(fields: [watchId], references: [id], onDelete: Cascade)
+  url       String
+  isPrimary Boolean  @default(false)
+  altText   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([watchId])
+}
+
+// ─── USER ────────────────────────────────────────────────────────────────────
+
+model User {
+  id                  String   @id
+  email               String   @unique
+  username            String?  @unique
+  displayName         String?
+  avatarUrl           String?
+  bio                 String?
+  isCollectionPublic  Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  reviews             Review[]
+  collection          Collection?
+  wishlist            Wishlist?
+}
+
+// ─── REVIEW ──────────────────────────────────────────────────────────────────
+
+model Review {
+  id        String   @id @default(uuid())
+  watchId   String
+  watch     Watch    @relation(fields: [watchId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  rating    Int
+  title     String?
+  body      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([watchId, userId])
+  @@index([watchId])
+  @@index([userId])
+}
+
+// ─── COLLECTION ──────────────────────────────────────────────────────────────
+
+model Collection {
+  id        String           @id @default(uuid())
+  userId    String           @unique
+  user      User             @relation(fields: [userId], references: [id])
+  isPublic  Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  items     CollectionItem[]
+}
+
+model CollectionItem {
+  id           String     @id @default(uuid())
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  watchId      String
+  watch        Watch      @relation(fields: [watchId], references: [id])
+  notes        String?
+  purchaseYear Int?
+  addedAt      DateTime   @default(now())
+
+  @@unique([collectionId, watchId])
+  @@index([collectionId])
+}
+
+// ─── WISHLIST ────────────────────────────────────────────────────────────────
+
+model Wishlist {
+  id        String         @id @default(uuid())
+  userId    String         @unique
+  user      User           @relation(fields: [userId], references: [id])
+  isPublic  Boolean        @default(true)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  items     WishlistItem[]
+}
+
+model WishlistItem {
+  id         String   @id @default(uuid())
+  wishlistId String
+  wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  watchId    String
+  watch      Watch    @relation(fields: [watchId], references: [id])
+  addedAt    DateTime @default(now())
+
+  @@unique([wishlistId, watchId])
+  @@index([wishlistId])
+}
