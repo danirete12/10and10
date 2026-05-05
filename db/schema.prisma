@@ -3,8 +3,9 @@ generator client {
   output   = "../app/node_modules/.prisma/client"
 }
 
+// LOCAL DEV: sqlite — cambiar provider a "postgresql" al conectar Railway
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -28,29 +29,22 @@ model Brand {
 }
 
 // ─── MOVEMENT ────────────────────────────────────────────────────────────────
-
-enum MovementType {
-  AUTOMATIC
-  MANUAL
-  QUARTZ
-  SOLAR
-  SPRING_DRIVE
-}
+// type: AUTOMATIC | MANUAL | QUARTZ | SOLAR | SPRING_DRIVE
 
 model Movement {
-  id              String       @id @default(uuid())
-  slug            String       @unique
+  id              String   @id @default(uuid())
+  slug            String   @unique
   caliber         String
   manufacturer    String?
-  type            MovementType
+  type            String   // MovementType enum as string
   jewels          Int?
   frequencyHz     Float?
   powerReserveH   Int?
-  cosc            Boolean      @default(false)
-  inHouse         Boolean      @default(false)
+  cosc            Boolean  @default(false)
+  inHouse         Boolean  @default(false)
   description     String?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   watches         Watch[]
 
@@ -59,90 +53,53 @@ model Movement {
 }
 
 // ─── WATCH ───────────────────────────────────────────────────────────────────
-
-enum CaseMaterial {
-  STAINLESS_STEEL
-  YELLOW_GOLD
-  WHITE_GOLD
-  ROSE_GOLD
-  TITANIUM
-  CERAMIC
-  PLATINUM
-  BRONZE
-  CARBON
-  OTHER
-}
-
-enum CrystalType {
-  SAPPHIRE
-  MINERAL
-  ACRYLIC
-  HESALITE
-}
-
-enum WaterResistanceUnit {
-  ATM
-  BAR
-  METERS
-}
-
-enum Gender {
-  MENS
-  WOMENS
-  UNISEX
-}
+// caseMaterial: STAINLESS_STEEL | YELLOW_GOLD | WHITE_GOLD | ROSE_GOLD | TITANIUM | CERAMIC | PLATINUM | BRONZE | CARBON | OTHER
+// crystal:      SAPPHIRE | MINERAL | ACRYLIC | HESALITE
+// waterResistanceUnit: ATM | BAR | METERS
+// gender:       MENS | WOMENS | UNISEX
+// complicationTags: JSON array serialized as string e.g. '["Cronógrafo","GMT"]'
 
 model Watch {
-  id              String        @id @default(uuid())
-  slug            String        @unique
+  id              String   @id @default(uuid())
+  slug            String   @unique
   reference       String
   commercialName  String?
 
   brandId         String
-  brand           Brand         @relation(fields: [brandId], references: [id])
+  brand           Brand    @relation(fields: [brandId], references: [id])
 
   movementId      String?
-  movement        Movement?     @relation(fields: [movementId], references: [id])
+  movement        Movement? @relation(fields: [movementId], references: [id])
 
-  // Introducción
   yearIntroduced  Int?
-  discontinued    Boolean       @default(false)
+  discontinued    Boolean  @default(false)
 
-  // Caja
   caseDiameterMm  Float?
   caseThicknessMm Float?
   lugToLugMm      Float?
-  caseMaterial    CaseMaterial?
-  crystal         CrystalType?
+  caseMaterial    String?
+  crystal         String?
 
-  // Esfera
   dialColor       String?
   dialMaterial    String?
 
-  // Correa / brazalete
   braceletMaterial String?
   lugWidthMm      Int?
 
-  // Agua
-  waterResistance       Int?
-  waterResistanceUnit   WaterResistanceUnit?
+  waterResistance      Int?
+  waterResistanceUnit  String?
 
-  // Clasificación
-  gender          Gender        @default(MENS)
-  complicationTags String[]
+  gender          String   @default("MENS")
+  complicationTags String  @default("[]") // JSON serialized
 
-  // Precio orientativo (EUR)
   retailPriceEur  Int?
-
-  // Descripción y contenido
   description     String?
 
-  // Métricas desnormalizadas (se actualizan en cada write de Review)
   averageRating   Float?
-  reviewCount     Int           @default(0)
+  reviewCount     Int      @default(0)
 
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   images          WatchImage[]
   reviews         Review[]

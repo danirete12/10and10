@@ -17,20 +17,20 @@ export function SearchBar({ initialQuery = "" }: { initialQuery?: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-full gap-2">
+    <form onSubmit={handleSubmit} className="flex w-full">
       <input
         name="q"
         type="search"
         defaultValue={initialQuery || searchParams.get("q") || ""}
         placeholder="Submariner, Datejust, ETA 2824..."
-        className="flex-1 border border-[var(--border)] bg-white px-4 py-2.5 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--accent)] dark:bg-[var(--muted)]"
+        className="flex-1 border border-[var(--border)] border-r-0 bg-white px-4 py-3 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--gold)]"
       />
       <button
         type="submit"
         disabled={isPending}
-        className="border border-[var(--accent)] bg-[var(--accent)] px-5 py-2.5 text-sm font-medium text-white transition-opacity disabled:opacity-50 dark:text-[var(--background)]"
+        className="border border-[var(--gold)] bg-[var(--gold)] px-6 py-3 text-xs font-medium uppercase tracking-widest text-white transition-opacity hover:opacity-90 disabled:opacity-50"
       >
-        {isPending ? "..." : "Buscar"}
+        {isPending ? "···" : "Buscar"}
       </button>
     </form>
   );

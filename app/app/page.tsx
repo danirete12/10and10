@@ -28,25 +28,41 @@ export default async function HomePage() {
 
   return (
     <main className="flex-1">
-      {/* Hero */}
-      <section className="border-b border-[var(--border)] px-4 py-16 text-center">
-        <h1 className="font-serif text-4xl font-bold tracking-tight sm:text-5xl">
-          La referencia del reloj
-        </h1>
-        <p className="mt-4 text-lg text-[var(--muted-foreground)]">
-          Base de datos de relojes, marcas y calibres en español
-        </p>
-        <div className="mt-8 mx-auto max-w-xl">
-          <SearchBar />
+      {/* Hero — editorial, left-aligned */}
+      <section className="border-b border-[var(--border)] bg-[var(--background)]">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-24">
+          <div className="max-w-2xl">
+            <p className="text-xs uppercase tracking-[0.3em] text-[var(--gold)] mb-4">
+              La referencia en español
+            </p>
+            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--foreground)] leading-[1.1]">
+              La enciclopedia<br />del reloj
+            </h1>
+            <p className="mt-5 text-base text-[var(--muted-foreground)] max-w-md leading-relaxed">
+              Base de datos de relojes, marcas y calibres para el aficionado
+              que quiere saber más de lo que pone la caja.
+            </p>
+            <div className="mt-8 max-w-lg">
+              <SearchBar />
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Featured watches */}
-      <section className="px-4 py-12 max-w-7xl mx-auto">
-        <h2 className="font-serif text-2xl font-semibold mb-6">
-          Relojes destacados
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 py-14">
+        <div className="flex items-baseline justify-between mb-8">
+          <h2 className="font-serif text-2xl font-semibold text-[var(--foreground)]">
+            Relojes destacados
+          </h2>
+          <a
+            href="/watches"
+            className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+          >
+            Ver todos →
+          </a>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-px bg-[var(--border)]">
           {featuredWatches.map((watch) => (
             <WatchCard key={watch.id} watch={watch} />
           ))}
@@ -54,12 +70,24 @@ export default async function HomePage() {
       </section>
 
       {/* Brands */}
-      <section className="border-t border-[var(--border)] px-4 py-12 max-w-7xl mx-auto">
-        <h2 className="font-serif text-2xl font-semibold mb-6">Marcas</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
-          {featuredBrands.map((brand) => (
-            <BrandCard key={brand.id} brand={brand} />
-          ))}
+      <section className="border-t border-[var(--border)] bg-[var(--muted)]">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-14">
+          <div className="flex items-baseline justify-between mb-8">
+            <h2 className="font-serif text-2xl font-semibold text-[var(--foreground)]">
+              Marcas
+            </h2>
+            <a
+              href="/brands"
+              className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+            >
+              Ver todas →
+            </a>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
+            {featuredBrands.map((brand) => (
+              <BrandCard key={brand.id} brand={brand} />
+            ))}
+          </div>
         </div>
       </section>
     </main>

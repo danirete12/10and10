@@ -39,7 +39,7 @@ type Watch = {
   waterResistance: number | null;
   waterResistanceUnit: string | null;
   retailPriceEur: number | null;
-  complicationTags: string[];
+  complicationTags: string; // JSON serialized array
 };
 
 type Movement = {
@@ -173,13 +173,13 @@ export function SpecsTable({ watch, movement }: { watch: Watch; movement: Moveme
       )}
 
       {/* Complicaciones */}
-      {watch.complicationTags.length > 0 && (
+      {(() => { const tags: string[] = JSON.parse(watch.complicationTags || "[]"); return tags.length > 0 && (
         <div>
           <h3 className="text-xs uppercase tracking-widest text-[var(--muted-foreground)] mb-2">
             Complicaciones
           </h3>
           <div className="flex flex-wrap gap-1.5">
-            {watch.complicationTags.map((tag) => (
+            {tags.map((tag) => (
               <span
                 key={tag}
                 className="border border-[var(--border)] px-2 py-0.5 text-xs text-[var(--muted-foreground)]"
@@ -189,7 +189,7 @@ export function SpecsTable({ watch, movement }: { watch: Watch; movement: Moveme
             ))}
           </div>
         </div>
-      )}
+      ); })()}
     </div>
   );
 }

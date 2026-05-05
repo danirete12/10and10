@@ -21,9 +21,9 @@ export function WatchCard({ watch }: WatchCardProps) {
   return (
     <Link
       href={`/watches/${watch.slug}`}
-      className="group block border border-[var(--border)] bg-white dark:bg-[var(--muted)] hover:border-[var(--accent)] transition-colors"
+      className="group block bg-[var(--card)] hover:bg-white transition-colors"
     >
-      {/* Image — square aspect */}
+      {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-[var(--muted)]">
         {image ? (
           <Image
@@ -31,41 +31,44 @@ export function WatchCard({ watch }: WatchCardProps) {
             alt={image.altText ?? displayName}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-[var(--muted-foreground)]">
+          <div className="absolute inset-0 flex items-center justify-center">
             <svg
-              width="40"
-              height="40"
+              width="36"
+              height="36"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="currentColor"
+              stroke="var(--border)"
               strokeWidth="1"
             >
-              <circle cx="12" cy="12" r="10" />
-              <circle cx="12" cy="12" r="4" />
-              <line x1="12" y1="2" x2="12" y2="5" />
-              <line x1="12" y1="19" x2="12" y2="22" />
+              <circle cx="12" cy="12" r="9" />
+              <circle cx="12" cy="12" r="3" />
+              <line x1="12" y1="3" x2="12" y2="6" />
+              <line x1="12" y1="18" x2="12" y2="21" />
+              <line x1="3" y1="12" x2="6" y2="12" />
             </svg>
           </div>
         )}
       </div>
 
       {/* Info */}
-      <div className="p-3">
-        <p className="text-xs uppercase tracking-wide text-[var(--muted-foreground)]">
+      <div className="p-3 pb-4">
+        <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-[var(--gold)]">
           {watch.brand.name}
         </p>
-        <p className="mt-0.5 text-sm font-medium leading-tight text-[var(--foreground)] line-clamp-2">
+        <p className="mt-1 font-serif text-sm font-semibold leading-snug text-[var(--foreground)] line-clamp-2">
           {displayName}
         </p>
-        <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">
-          Ref. {watch.reference}
+        <p className="mt-0.5 text-[11px] text-[var(--muted-foreground)]">
+          {watch.reference}
         </p>
         {watch.reviewCount > 0 && (
-          <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-            ★ {watch.averageRating?.toFixed(1)} ({watch.reviewCount})
+          <p className="mt-1.5 text-[10px] text-[var(--muted-foreground)]">
+            <span className="text-[var(--gold)]">★</span>{" "}
+            {watch.averageRating?.toFixed(1)}{" "}
+            <span className="opacity-60">({watch.reviewCount})</span>
           </p>
         )}
       </div>
